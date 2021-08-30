@@ -1,16 +1,25 @@
 {
-    "cSpell.diagnosticLevel": "Hint",
-    "editor.formatOnSave": true,
-    "editor.fontSize": 18,
-    "editor.fontWeight": 600,
-    "window.zoomLevel": 0.50,
-    "workbench.colorCustomizations": {
-
-        // will change the color of three dots to red
-        //"editorHint.foreground": "#ff0000",
-        "editorHint.foreground": "#f000",
-      
-        // will underline the entire word with dots in your chosen color
-        "editorHint.border": "#ff0000"
-      }
+  "cSpell.diagnosticLevel": "Hint",
+  "editor.formatOnSave": true,
+  "editor.fontSize": 18,
+  "editor.fontWeight": 600,
+  "window.zoomLevel": 0.50,
+  "workbench.colorCustomizations": {
+    // will change the color of three dots to red
+    //"editorHint.foreground": "#ff0000",
+    "editorHint.foreground": "#f000",
+    // will underline the entire word with dots in your chosen color
+    "editorHint.border": "#ff0000"
+  },
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/*.freezed.dart": true,
+    "**/*.g.dart": false,
+    "**/.gitkeep": false
+  },
+  "explorerExclude.backup": null
 }
