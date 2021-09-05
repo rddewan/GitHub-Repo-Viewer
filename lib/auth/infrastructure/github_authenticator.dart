@@ -5,6 +5,20 @@ import 'package:flutter/services.dart';
 import 'package:github_repo/auth/domain/auth_failure.dart';
 import 'package:github_repo/auth/infrastructure/credential_storage/credential_storage.dart';
 import 'package:oauth2/oauth2.dart';
+import 'package:http/http.dart' as http;
+
+/*
+custom http client to modify header for github
+*/
+class GithubOAuthHttpClient extends http.BaseClient {
+  final httpClient = http.Client();
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) {
+    request.headers['Accept'] = 'application/json';
+    return httpClient.send(request);
+  }
+}
 
 class GithubAuthenticator {
   final CredentialsStorage _credentialsStorage;
@@ -41,7 +55,8 @@ class GithubAuthenticator {
   AuthorizationCodeGrant codeGrant() {
     return AuthorizationCodeGrant(
         clientId, authorizationEndpoint, tokenEndpoint,
-        secret: clientSecret);
+        secret: clientSecret,
+        httpClient: GithubOAuthHttpClient());
   }
 
   Uri getAuthorizationUrl(AuthorizationCodeGrant codeGrant) {
@@ -51,12 +66,10 @@ class GithubAuthenticator {
   Future<Either<AuthFailure, Unit>> handleAuthorizationResponse(
       AuthorizationCodeGrant codeGrant, Map<String, String> queryParams) async {
     try {
-
       final httpClient =
           await codeGrant.handleAuthorizationResponse(queryParams);
       await _credentialsStorage.save(httpClient.credentials);
       return right(unit);
-
     } on FormatException {
       return left(const AuthFailure.server());
     } on AuthorizationException catch (e) {
