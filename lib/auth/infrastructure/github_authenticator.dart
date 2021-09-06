@@ -57,16 +57,25 @@ class GithubAuthenticator {
   Future<bool> isSignedIn() =>
       getSignedInCredentials().then((value) => value != null);
 
+  /*
+  1.create the authorization grant
+  */
   AuthorizationCodeGrant codeGrant() {
     return AuthorizationCodeGrant(
         clientId, authorizationEndpoint, tokenEndpoint,
         secret: clientSecret, httpClient: GithubOAuthHttpClient());
   }
 
+  /*
+  2.get the authorization url once AuthorizationCodeGrant object is created
+  */
   Uri getAuthorizationUrl(AuthorizationCodeGrant codeGrant) {
     return codeGrant.getAuthorizationUrl(redirectUrl, scopes: scopes);
   }
 
+  /*
+  3. handle authorization for github
+  */
   Future<Either<AuthFailure, Unit>> handleAuthorizationResponse(
       AuthorizationCodeGrant codeGrant, Map<String, String> queryParams) async {
     try {
