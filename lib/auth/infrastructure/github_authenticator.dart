@@ -45,7 +45,8 @@ class GithubAuthenticator {
 
       if (storageCredentials != null) {
         if (storageCredentials.canRefresh && storageCredentials.isExpired) {
-          //TODO: refresh
+          final failureOrCredentials = await refresh(storageCredentials);
+          return failureOrCredentials.fold((l) => null, (r) => r);
         }
       }
     } on PlatformException {
@@ -110,6 +111,24 @@ class GithubAuthenticator {
     } on PlatformException {
       return left(const AuthFailure.storage());
     }
-  }  
-}
+  }
 
+  Future<Either<AuthFailure, Credentials>> refresh(
+      Credentials credentials) async {
+    try {
+      final refreshCredentials = await credentials.refresh(
+        identifier: clientId,
+        secret: clientSecret,
+        httpClient: GithubOAuthHttpClient(),
+      );
+      await _credentialsStorage.save(refreshCredentials);
+      return right(refreshCredentials);
+    } on AuthorizationException catch (e) {
+      return left(AuthFailure.server('${e.error} : ${e.description}'));
+    } on FormatException {
+      return left(const AuthFailure.server());
+    } on PlatformException {
+      return left(const AuthFailure.storage());
+    }
+  }
+}
